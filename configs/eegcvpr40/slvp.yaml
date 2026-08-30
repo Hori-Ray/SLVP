@@ -1,0 +1,86 @@
+timesteps: [0, 440]
+
+blur_kernel_size: 51
+system_g: 3
+
+name: "${dataset}_${exp_setting}_retrieval_awmb_contextual_adapter_${brain_backbone}_${vision_backbone}"
+
+models:
+  brain:
+    target: "base.eeg_backbone.${brain_backbone}"
+    params:
+      c_num: 128
+      z_dim: ${z_dim}
+      timesteps: ${timesteps}
+
+visual_calibration:
+  enabled: True
+  mode: contextual_adapter
+
+  z_dim: ${z_dim}
+  stat_dim: 6
+
+  hidden_dim: 768
+  dropout: 0.10
+
+  adapter_lambda_init: 0.03
+  adapter_lambda_max: 0.12
+
+  use_stat: True
+  zero_init: True
+
+  semantic_keep_weight: 0.005
+  lr_mult: 5.0
+
+eegcvpr40:
+  task: retrieval
+  prototype_train: False
+  retrieval_target: label
+
+data:
+  data_dir: data/eegcvpr40/Preprocessed_data_1000Hz
+  selected_ch: "None"
+  model_type: ${vision_backbone}
+
+  train_batch_size: 256
+  val_batch_size: 128
+  test_batch_size: 128
+
+  return_original_feature_for_calibration: True
+  return_awmb_stats_for_calibration: True
+  return_awmb_context_for_teacher: True
+
+  uncertainty_aware: False
+  multi_level_feature_fusion: False
+
+  clip_ckpt: /mnt/i/lyp/UBP_ver4.0/pretrained/open_clip_pytorch_model.bin
+
+  feature_extract_batch_size: 4
+  feature_encode_batch_size: 8
+
+  blur_type:
+    target: base.inpating_data.AttentionWeightedMultiBlurWithStats
+    params:
+      h: 224
+      w: 224
+      blur_kernel_size: ${blur_kernel_size}
+      min_kernel_size: 3
+      mid_kernel_ratio: 0.35
+      attn_smooth_ksize: 9
+      grad_gamma: 0.8
+      center_prior: 0.15
+      center_sigma_ratio: 0.45
+      softness: 0.15
+
+  train_avg: True
+  val_avg: True
+  test_avg: True
+  timesteps: ${timesteps}
+
+train:
+  epoch: ${epoch}
+  optimizer: AdamW
+  lr: ${lr}
+  weight_decay: 0.01
+
+save_dir: "exp"

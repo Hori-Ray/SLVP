@@ -1,0 +1,83 @@
+timesteps: [0,201]
+
+blur_kernel_size: 51
+system_g: 3
+
+name: "${dataset}_${exp_setting}_awmb_contextual_adapter_${brain_backbone}_${vision_backbone}"
+
+models:
+  brain:
+    target: "base.eeg_backbone.${brain_backbone}"
+    params:
+        c_num: 271
+        z_dim: ${z_dim}
+        timesteps: ${timesteps}
+
+visual_calibration:
+  enabled: True
+  mode: contextual_adapter
+
+  z_dim: ${z_dim}
+  stat_dim: 6
+
+  hidden_dim: 768
+  dropout: 0.10
+
+  adapter_lambda_init: 0.03
+  adapter_lambda_max: 0.12
+
+  use_stat: True
+  zero_init: True
+
+  semantic_keep_weight: 0.005
+  lr_mult: 5.0
+
+
+
+
+data:
+  data_dir: data/things-meg/Preprocessed_data
+  selected_ch: False
+
+  model_type: ${vision_backbone}
+
+  train_batch_size: 1024
+  val_batch_size: 200
+  test_batch_size: 200
+
+  return_original_feature_for_calibration: True
+  return_awmb_stats_for_calibration: True
+  return_awmb_context_for_teacher: True
+
+  multi_level_feature_fusion: False
+
+  uncertainty_aware: True
+
+  feature_extract_batch_size: 8
+  feature_encode_batch_size: 16
+
+  blur_type:
+    target: base.inpating_data.AttentionWeightedMultiBlurWithStats
+    params:
+          h: 224
+          w: 224
+          blur_kernel_size: ${blur_kernel_size}
+          min_kernel_size: 3
+          mid_kernel_ratio: 0.35
+          attn_smooth_ksize: 9
+          grad_gamma: 0.8
+          center_prior: 0.15
+          center_sigma_ratio: 0.45
+          softness: 0.15
+
+  train_avg: True
+  test_avg: True
+  timesteps: ${timesteps}
+
+train:
+  epoch: ${epoch}
+  optimizer: AdamW
+  lr: ${lr}
+  weight_decay: 0.01
+
+save_dir: 'exp'

@@ -1,0 +1,94 @@
+timesteps: [0, 440]
+
+blur_kernel_size: 51
+system_g: 3
+
+name: "${dataset}_${exp_setting}_retrieval_ubp_${brain_backbone}_${vision_backbone}"
+
+models:
+  brain:
+    target: "base.eeg_backbone.${brain_backbone}"
+    params:
+      c_num: 128
+      z_dim: ${z_dim}
+      timesteps: ${timesteps}
+
+visual_calibration:
+  enabled: False
+  mode: contextual_adapter
+  z_dim: ${z_dim}
+  stat_dim: 6
+  hidden_dim: 768
+  dropout: 0.10
+  adapter_lambda_init: 0.03
+  adapter_lambda_max: 0.12
+  use_stat: True
+  zero_init: True
+  semantic_keep_weight: 0.005
+  lr_mult: 5.0
+
+context_teacher:
+  enabled: False
+  weight: 0.0
+  detach: True
+
+hard_negative_margin:
+  enabled: False
+  margin: 0.03
+  weight: 0.0
+  topk: 1
+  warmup_epochs: 5
+
+mixup:
+  enabled: False
+  alpha: 0.2
+  prob: 0.5
+  start_epoch: 0
+  use_max_lambda: True
+
+eegcvpr40:
+  task: retrieval
+  prototype_train: False
+  retrieval_target: label
+  label_positive_train: False
+
+data:
+  data_dir: data/eegcvpr40/Preprocessed_data_1000Hz
+  selected_ch: "None"
+  model_type: ${vision_backbone}
+
+  train_batch_size: 256
+  val_batch_size: 128
+  test_batch_size: 128
+
+  return_original_feature_for_calibration: False
+  return_awmb_stats_for_calibration: False
+  return_awmb_context_for_teacher: False
+
+  uncertainty_aware: True
+  multi_level_feature_fusion: False
+
+  clip_ckpt: /mnt/i/lyp/UBP_ver4.0/pretrained/open_clip_pytorch_model.bin
+
+  feature_extract_batch_size: 4
+  feature_encode_batch_size: 8
+
+  blur_type:
+    target: base.inpating_data.FoveaBlur
+    params:
+      h: 224
+      w: 224
+      blur_kernel_size: ${blur_kernel_size}
+
+  train_avg: True
+  val_avg: True
+  test_avg: True
+  timesteps: ${timesteps}
+
+train:
+  epoch: ${epoch}
+  optimizer: AdamW
+  lr: ${lr}
+  weight_decay: 0.01
+
+save_dir: "exp"
