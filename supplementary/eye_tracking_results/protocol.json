@@ -1,0 +1,22 @@
+{
+  "project_root": "/mnt/i/lyp/UBP_ver4.0",
+  "cache_dir": "/mnt/i/lyp/UBP_ver4.0/eye_tracking_data/pysaliency_cache",
+  "datasets": [
+    "mit1003",
+    "cat2000"
+  ],
+  "sauc_repeats": 100,
+  "random_seed": 2026,
+  "awmb": {
+    "height": 224,
+    "width": 224,
+    "max_kernel": 51,
+    "min_kernel": 3,
+    "mid_kernel_ratio": 0.35,
+    "attention_smoothing_kernel": 9,
+    "gradient_gamma": 0.8,
+    "center_prior_weight": 0.15,
+    "center_sigma_ratio": 0.45,
+    "softness": 0.15
+  }
+}
