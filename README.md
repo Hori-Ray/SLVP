@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This is the official implementation for **Modeling the Selective and Lossy Nature of Visual Processing Bridges the Discrepancy in Non-Invasive Neural Decoding**.
+This is the official implementation for **Modeling the Selective and Lossy Nature of Visual Processing Bridges the Discrepancy in Non-Invasive Neural Decoding**. The manuscript will be accepted for publication in International Journal of Neural Systems 2026. If you find our paper and code interesting or useful, please cite our paper. Contact E-mail: sculyp02@163.com.
 
 Our work studies neural decoding from the perspective that human visual processing is inherently **selective and lossy**. Based on this motivation, the framework introduces an attention-weighted multi-level visual degradation strategy, contextual visual calibration, and a stability-preserving adaptive EEG encoder to improve the alignment between non-invasive neural signals and visual representations.
 
